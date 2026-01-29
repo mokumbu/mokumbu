@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import Menu from '@/components/Menu.vue';
 import Footer from '@/components/Footer.vue';
+import ThemeSettings from '@/components/ThemeSettings.vue';
 
 interface Props {
 	title: string;
@@ -19,15 +20,17 @@ defineProps<Props>();
 		<Menu />
 
 		<div class="page-wrapper">
-			<slot name="header"></slot>
+			<slot name="header" />
 
 			<main id="content" class="page-body">
-				<slot name="body"></slot>
+				<slot name="body" />
 			</main>
 			
 			<Footer />
 		</div>
 
-		<slot name="extra"></slot>
+		<slot name="extra" />
 	</div>
+
+	<ThemeSettings />
 </template>
