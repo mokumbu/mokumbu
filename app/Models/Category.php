@@ -10,6 +10,7 @@ class Category extends Model
     use HasUuids;
 
     protected $fillable = [
+        'user_id',
         'name',
         'description',
         'icon',

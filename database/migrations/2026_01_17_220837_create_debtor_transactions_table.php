@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['debtor_id', 'transaction_id']);
+            $table->unique(['debtor_id']);
         });
     }
 
