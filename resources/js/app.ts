@@ -1,4 +1,5 @@
-import '../css/app.css';
+import '@tabler/core/dist/css/tabler.min.css';
+import '@tabler/core/dist/js/tabler.min.js';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
