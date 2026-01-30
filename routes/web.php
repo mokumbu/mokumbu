@@ -14,4 +14,3 @@ Route::inertia('test_login', 'TestLogin');
 
 Route::post('/auth/firebase', FirebaseAuthController::class);
 
-require __DIR__.'/settings.php';
