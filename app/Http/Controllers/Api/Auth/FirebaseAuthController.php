@@ -16,13 +16,13 @@ class FirebaseAuthController extends Controller
         $firebaseToken = $request->bearerToken();
 
         if (! $firebaseToken) {
-            abort(401, 'Missing token');
+            abort(401, 'Token não fornecido');
         }
 
         try {
             $verifiedToken = $firebaseAuth->verifyIdToken($firebaseToken);
         } catch (\Throwable) {
-            abort(401, 'Invalid Firebase token');
+            abort(401, 'Token inválido');
         }
 
         $claims = $verifiedToken->claims();
@@ -40,7 +40,7 @@ class FirebaseAuthController extends Controller
         );
 
         // 🔐 Login WEB (session)
-        if (! $request->expectsJson()) {
+        if (! $request->has('api/*')) {
             Auth::login($user);
             return true;
         }

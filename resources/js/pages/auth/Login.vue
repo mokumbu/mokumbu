@@ -1,15 +1,64 @@
 <script setup lang="ts">
-import Layout from '@/layouts/Auth.vue';
+import { ref } from 'vue';
+
+import Layout from '@/layouts/Auth.vue'
 import { login, register } from '@/routes';
-import { Form, Link } from '@inertiajs/vue3';
+
+import { Link, useForm } from '@inertiajs/vue3'
+
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase'
+import axios from 'axios'
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 
-import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+
+const showPassword = ref(false);
+
+const form = useForm({
+    email: '',
+    password: '',
+})
+
+const loginWithFirebase = async () => {
+    if (form.processing) return
+
+    form.clearErrors()
+    form.processing = true
+
+    try {
+        const cred = await signInWithEmailAndPassword(
+            auth,
+            form.email,
+            form.password
+        )
+
+        const token = await cred.user.getIdToken(true)
+
+        await axios.post(
+            '/auth/firebase',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+
+        window.location.href = '/dashboard'
+    } catch (error: any) {
+        console.error(error)
+
+        // Mensagem genérica (não expor detalhes do Firebase)
+        form.setError('email', 'Credenciais inválidas')
+    } finally {
+        form.processing = false
+    }
+}
 </script>
 
 <template>
@@ -36,16 +85,14 @@ import { request } from '@/routes/password';
                         <div class="card card-md">
                             <div class="card-body">
                                 <h2 class="h2 text-center mb-4">Iniciar sessão</h2>
-                                <Form
-                                    v-bind="store.form()"
-                                    :reset-on-success="['password']"
-                                    v-slot="{ errors, processing }"
+                                <form
+                                    @submit.prevent="loginWithFirebase"
                                 >
                                     <div class="mb-3">
                                         <label class="form-label">E-mail</label>
                                         <Input
                                             type="email"
-                                            name="email"
+                                            v-model="form.email"
                                             id="email"
                                             class="form-control"
                                             placeholder="exemplo@email.com"
@@ -54,8 +101,10 @@ import { request } from '@/routes/password';
                                             autofocus
                                             :tabindex="1"
                                         />
-
-                                        <InputError :message="errors.email" />
+                                        
+                                        <div v-if="form.errors.email" class="invalid-feedback d-block">
+                                            {{ form.errors.email }}
+                                        </div>
                                     </div>
 
                                     <div class="mb-2">
@@ -68,8 +117,8 @@ import { request } from '@/routes/password';
 
                                         <div class="input-group input-group-flat">
                                             <Input
-                                                type="password"
-                                                name="password"
+                                                :type="showPassword ? 'text' : 'password'"
+                                                v-model="form.password"
                                                 id="password"
                                                 class="form-control"
                                                 placeholder="Sua senha"
@@ -77,9 +126,10 @@ import { request } from '@/routes/password';
                                                 required
                                                 :tabindex="2"
                                             />
-                                            
+
                                             <span class="input-group-text">
                                                 <a href="#" class="link-secondary" title="Show password"
+                                                    @click="showPassword = !showPassword"
                                                     data-bs-toggle="tooltip"><!-- Download SVG icon from http://tabler.io/icons/icon/eye -->
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -91,8 +141,6 @@ import { request } from '@/routes/password';
                                                     </svg>
                                                 </a>
                                             </span>
-
-                                            <InputError :message="errors.password" />
                                         </div>
                                     </div>
 

@@ -10,7 +10,5 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::inertia('test_login', 'TestLogin');
-
-Route::post('/auth/firebase', FirebaseAuthController::class);
+Route::post('/auth/firebase', FirebaseAuthController::class)->name('auth.firebase');
 
