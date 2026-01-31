@@ -12,3 +12,5 @@ Route::get('dashboard', function () {
 
 Route::post('/auth/firebase', FirebaseAuthController::class)->name('auth.firebase');
 
+Route::inertia('/privacy-policy', 'PrivacyPolicy')->name('privacy-policy');
+Route::inertia('/terms-and-conditions', 'TermsAndConditions')->name('terms-and-conditions');
