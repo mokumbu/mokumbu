@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 
 import { request } from '@/routes/password';
 import GoogleProvider from '@/components/Login/GoogleProvider.vue';
+import AppleProvider from '@/components/Login/AppleProvider.vue';
 
 const showPassword = ref(false);
 
@@ -151,6 +152,7 @@ const submit = async () => {
                             <div class="card-body">
                                 <div class="d-flex justify-content-center gap-2">
                                     <GoogleProvider />
+                                    <AppleProvider />
                                 </div>
                             </div>
                         </div>
