@@ -1,14 +1,68 @@
 <script setup lang="ts">
-import Layout from '@/layouts/Auth.vue';
-import { login, register } from '@/routes';
-import { Form, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
-import { Checkbox } from '@/components/ui/checkbox';
+import Layout from '@/layouts/Auth.vue'
+import { login, register } from '@/routes';
+
+import { Link, useForm } from '@inertiajs/vue3'
+
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase'
+import axios from 'axios'
+
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 
-import { store } from '@/routes/register';
+import { request } from '@/routes/password';
+import GoogleProvider from '@/components/Login/GoogleProvider.vue';
+import FacebookProvider from '@/components/Login/FacebookProvider.vue';
+import AppleProvider from '@/components/Login/AppleProvider.vue';
+
+const showPassword = ref(false);
+
+const form = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+})
+
+const submit = async () => {
+    if (form.processing) return
+
+    form.clearErrors()
+    form.processing = true
+
+    try {
+        const cred = await createUserWithEmailAndPassword(
+            auth,
+            form.email,
+            form.password
+        )
+
+        const token = await cred.user.getIdToken(true)
+
+        await axios.post(
+            '/auth/firebase',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+
+        window.location.href = '/dashboard'
+    } catch (error: any) {
+        console.error(error)
+
+        // Mensagem genérica (não expor detalhes do Firebase)
+        form.setError('email', 'Credenciais inválidas')
+    } finally {
+        form.processing = false
+    }
+}
 </script>
 
 <template>
@@ -35,32 +89,27 @@ import { store } from '@/routes/register';
                         <div class="card card-md">
                             <div class="card-body">
                                 <h2 class="h2 text-center mb-4">Criar conta</h2>
-                                <Form v-bind="store.form()" :reset-on-success="['password', 'password_confirmation']"
-                                    v-slot="{ errors, processing }">
+                                <form @submit.prevent="submit">
                                     <div class="mb-3">
                                         <label class="form-label">Nome</label>
-                                        <Input
-                                            type="text"
-                                            name="name"
-                                            id="name"
-                                            class="form-control"
-                                            placeholder="Nome"
-                                            autocomplete="name"
-                                            required
-                                            autofocus
-                                            :tabindex="1"
-                                        />
+                                        <Input type="text" v-model="form.name" id="name" class="form-control"
+                                            placeholder="Nome" autocomplete="name" required autofocus :tabindex="1" />
 
-                                        <InputError :message="errors.email" />
+                                        <div v-if="form.errors.name" class="invalid-feedback d-block">
+                                            {{ form.errors.name }}
+                                        </div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <Input type="email" name="email" id="email" class="form-control"
-                                            placeholder="exemplo@email.com" autocomplete="email" required autofocus
-                                            :tabindex="1" />
+                                        <Input type="email" v-model="form.email" id="email" class="form-control"
+                                            placeholder="exemplo@email.com" autocomplete="email" required
+                                            :tabindex="2" />
 
-                                        <InputError :message="errors.email" />
+
+                                        <div v-if="form.errors.email" class="invalid-feedback d-block">
+                                            {{ form.errors.email }}
+                                        </div>
                                     </div>
 
                                     <div class="mb-2">
@@ -69,9 +118,9 @@ import { store } from '@/routes/register';
                                         </label>
 
                                         <div class="input-group input-group-flat">
-                                            <Input type="password" name="password" id="password" class="form-control"
-                                                placeholder="Sua senha" autocomplete="new-password" required
-                                                :tabindex="2" />
+                                            <Input type="password" v-model="form.password" id="password"
+                                                class="form-control" placeholder="Sua senha" autocomplete="new-password"
+                                                required :tabindex="3" />
 
                                             <span class="input-group-text">
                                                 <a href="#" class="link-secondary" title="Show password"
@@ -87,7 +136,10 @@ import { store } from '@/routes/register';
                                                 </a>
                                             </span>
 
-                                            <InputError :message="errors.password" />
+
+                                            <div v-if="form.errors.password" class="invalid-feedback d-block">
+                                                {{ form.errors.password }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -97,9 +149,10 @@ import { store } from '@/routes/register';
                                         </label>
 
                                         <div class="input-group input-group-flat mt-3">
-                                            <Input type="password" name="password_confirmation" id="password_confirmation" class="form-control"
+                                            <Input type="password" v-model="form.password_confirmation"
+                                                id="password_confirmation" class="form-control"
                                                 placeholder="Confirme sua senha" autocomplete="new-password" required
-                                                :tabindex="3" />
+                                                :tabindex="4" />
 
                                             <span class="input-group-text">
                                                 <a href="#" class="link-secondary" title="Show password"
@@ -115,51 +168,31 @@ import { store } from '@/routes/register';
                                                 </a>
                                             </span>
 
-                                            <InputError :message="errors.password_confirmation" />
+
+                                            <div v-if="form.errors.password_confirmation"
+                                                class="invalid-feedback d-block">
+                                                {{ form.errors.password_confirmation }}
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-footer">
-                                        <Button type="submit" class="btn btn-primary w-100" :tabindex="4"
-                                            :disabled="processing" data-test="login-button">
-                                            <Spinner v-if="processing" />
+                                        <Button type="submit" class="btn btn-primary w-100" :tabindex="5"
+                                            :disabled="form.processing" data-test="login-button">
+                                            <Spinner v-if="form.processing" />
                                             Criar conta
                                         </Button>
                                     </div>
                                 </Form>
                             </div>
 
-                            <div class="hr-text">ou entrar com</div>
+                            <div class="hr-text">ou criar conta com</div>
 
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col">
-                                        <a href="#" class="btn btn-4 w-100">
-                                            <!-- Download SVG icon from http://tabler.io/icons/icon/brand-github -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                                focusable="false" class="icon text-github icon-2">
-                                                <path
-                                                    d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
-                                            </svg>
-                                            Login with Github
-                                        </a>
-                                    </div>
-
-                                    <div class="col">
-                                        <a href="#" class="btn btn-4 w-100">
-                                            <!-- Download SVG icon from http://tabler.io/icons/icon/brand-x -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                                focusable="false" class="icon text-x icon-2">
-                                                <path d="M4 4l11.733 16h4.267l-11.733 -16l-4.267 0" />
-                                                <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
-                                            </svg>
-                                            Login with X
-                                        </a>
-                                    </div>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <GoogleProvider />
+                                    <FacebookProvider />
+                                    <AppleProvider />
                                 </div>
                             </div>
                         </div>

@@ -1,15 +1,67 @@
 <script setup lang="ts">
-import Layout from '@/layouts/Auth.vue';
+import { ref } from 'vue';
+
+import Layout from '@/layouts/Auth.vue'
 import { login, register } from '@/routes';
-import { Form, Link } from '@inertiajs/vue3';
+
+import { Link, useForm } from '@inertiajs/vue3'
+
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase'
+import axios from 'axios'
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 
-import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import GoogleProvider from '@/components/Login/GoogleProvider.vue';
+import FacebookProvider from '@/components/Login/FacebookProvider.vue';
+import AppleProvider from '@/components/Login/AppleProvider.vue';
+
+const showPassword = ref(false);
+
+const form = useForm({
+    email: '',
+    password: '',
+})
+
+const submit = async () => {
+    if (form.processing) return
+
+    form.clearErrors()
+    form.processing = true
+
+    try {
+        const cred = await signInWithEmailAndPassword(
+            auth,
+            form.email,
+            form.password
+        )
+
+        const token = await cred.user.getIdToken(true)
+
+        await axios.post(
+            '/auth/firebase',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+
+        window.location.href = '/dashboard'
+    } catch (error: any) {
+        console.error(error)
+
+        // Mensagem genérica (não expor detalhes do Firebase)
+        form.setError('email', 'Credenciais inválidas')
+    } finally {
+        form.processing = false
+    }
+}
 </script>
 
 <template>
@@ -21,8 +73,8 @@ import { request } from '@/routes/password';
                         <div class="text-center mb-4">
                             <!-- BEGIN NAVBAR LOGO -->
                             <Link :href="login()" aria-label="Tabler" class="navbar-brand navbar-brand-autodark">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    width="110" height="32" viewBox="0 0 232 68" class="navbar-brand-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="110" height="32" viewBox="0 0 232 68"
+                                    class="navbar-brand-image">
                                     <path
                                         d="M64.6 16.2C63 9.9 58.1 5 51.8 3.4 40 1.5 28 1.5 16.2 3.4 9.9 5 5 9.9 3.4 16.2 1.5 28 1.5 40 3.4 51.8 5 58.1 9.9 63 16.2 64.6c11.8 1.9 23.8 1.9 35.6 0C58.1 63 63 58.1 64.6 51.8c1.9-11.8 1.9-23.8 0-35.6zM33.3 36.3c-2.8 4.4-6.6 8.2-11.1 11-1.5.9-3.3.9-4.8.1s-2.4-2.3-2.5-4c0-1.7.9-3.3 2.4-4.1 2.3-1.4 4.4-3.2 6.1-5.3-1.8-2.1-3.8-3.8-6.1-5.3-2.3-1.3-3-4.2-1.7-6.4s4.3-2.9 6.5-1.6c4.5 2.8 8.2 6.5 11.1 10.9 1 1.4 1 3.3.1 4.7zM49.2 46H37.8c-2.1 0-3.8-1-3.8-3s1.7-3 3.8-3h11.4c2.1 0 3.8 1 3.8 3s-1.7 3-3.8 3z"
                                         fill="#066fd1" style="fill: var(--tblr-primary, #066fd1)" />
@@ -36,26 +88,16 @@ import { request } from '@/routes/password';
                         <div class="card card-md">
                             <div class="card-body">
                                 <h2 class="h2 text-center mb-4">Iniciar sessão</h2>
-                                <Form
-                                    v-bind="store.form()"
-                                    :reset-on-success="['password']"
-                                    v-slot="{ errors, processing }"
-                                >
+                                <form @submit.prevent="submit">
                                     <div class="mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <Input
-                                            type="email"
-                                            name="email"
-                                            id="email"
-                                            class="form-control"
-                                            placeholder="exemplo@email.com"
-                                            autocomplete="email"
-                                            required
-                                            autofocus
-                                            :tabindex="1"
-                                        />
+                                        <Input type="email" v-model="form.email" id="email" class="form-control"
+                                            placeholder="exemplo@email.com" autocomplete="email" required autofocus
+                                            :tabindex="1" />
 
-                                        <InputError :message="errors.email" />
+                                        <div v-if="form.errors.email" class="invalid-feedback d-block">
+                                            {{ form.errors.email }}
+                                        </div>
                                     </div>
 
                                     <div class="mb-2">
@@ -67,19 +109,13 @@ import { request } from '@/routes/password';
                                         </label>
 
                                         <div class="input-group input-group-flat">
-                                            <Input
-                                                type="password"
-                                                name="password"
-                                                id="password"
-                                                class="form-control"
-                                                placeholder="Sua senha"
-                                                autocomplete="current-password"
-                                                required
-                                                :tabindex="2"
-                                            />
-                                            
+                                            <Input :type="showPassword ? 'text' : 'password'" v-model="form.password"
+                                                id="password" class="form-control" placeholder="Sua senha"
+                                                autocomplete="current-password" required :tabindex="2" />
+
                                             <span class="input-group-text">
                                                 <a href="#" class="link-secondary" title="Show password"
+                                                    @click="showPassword = !showPassword"
                                                     data-bs-toggle="tooltip"><!-- Download SVG icon from http://tabler.io/icons/icon/eye -->
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -91,27 +127,21 @@ import { request } from '@/routes/password';
                                                     </svg>
                                                 </a>
                                             </span>
-
-                                            <InputError :message="errors.password" />
                                         </div>
                                     </div>
 
                                     <div class="mt-3 mb-3">
                                         <Label for="remember" class="form-check">
-                                            <Checkbox id="remember" name="remember" class="form-check-input p-0" :tabindex="3" />
+                                            <Checkbox id="remember" name="remember" class="form-check-input p-0"
+                                                :tabindex="3" />
                                             <span class="form-check-label">Lembrar-me neste dispositivo</span>
                                         </Label>
                                     </div>
 
                                     <div class="form-footer">
-                                        <Button
-                                            type="submit"
-                                            class="btn btn-primary w-100"
-                                            :tabindex="4"
-                                            :disabled="processing"
-                                            data-test="login-button"
-                                        >
-                                            <Spinner v-if="processing" />
+                                        <Button type="submit" class="btn btn-primary w-100" :tabindex="4"
+                                            :disabled="form.processing" data-test="login-button">
+                                            <Spinner v-if="form.processing" />
                                             Entrar
                                         </Button>
                                     </div>
@@ -121,34 +151,10 @@ import { request } from '@/routes/password';
                             <div class="hr-text">ou entrar com</div>
 
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col">
-                                        <a href="#" class="btn btn-4 w-100">
-                                            <!-- Download SVG icon from http://tabler.io/icons/icon/brand-github -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                                focusable="false" class="icon text-github icon-2">
-                                                <path
-                                                    d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
-                                            </svg>
-                                            Login with Github
-                                        </a>
-                                    </div>
-
-                                    <div class="col">
-                                        <a href="#" class="btn btn-4 w-100">
-                                            <!-- Download SVG icon from http://tabler.io/icons/icon/brand-x -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                                focusable="false" class="icon text-x icon-2">
-                                                <path d="M4 4l11.733 16h4.267l-11.733 -16l-4.267 0" />
-                                                <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
-                                            </svg>
-                                            Login with X
-                                        </a>
-                                    </div>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <GoogleProvider />
+                                    <FacebookProvider />
+                                    <AppleProvider />
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\FirebaseAuthController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,4 +10,5 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-require __DIR__.'/settings.php';
+Route::post('/auth/firebase', FirebaseAuthController::class)->name('auth.firebase');
+
