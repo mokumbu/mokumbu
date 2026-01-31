@@ -24,7 +24,7 @@ const form = useForm({
     password: '',
 })
 
-const loginWithFirebase = async () => {
+const submit = async () => {
     if (form.processing) return
 
     form.clearErrors()
@@ -86,7 +86,7 @@ const loginWithFirebase = async () => {
                             <div class="card-body">
                                 <h2 class="h2 text-center mb-4">Iniciar sessão</h2>
                                 <form
-                                    @submit.prevent="loginWithFirebase"
+                                    @submit.prevent="submit"
                                 >
                                     <div class="mb-3">
                                         <label class="form-label">E-mail</label>
@@ -156,10 +156,10 @@ const loginWithFirebase = async () => {
                                             type="submit"
                                             class="btn btn-primary w-100"
                                             :tabindex="4"
-                                            :disabled="processing"
+                                            :disabled="form.processing"
                                             data-test="login-button"
                                         >
-                                            <Spinner v-if="processing" />
+                                            <Spinner v-if="form.processing" />
                                             Entrar
                                         </Button>
                                     </div>

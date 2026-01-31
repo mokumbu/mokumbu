@@ -1,14 +1,65 @@
 <script setup lang="ts">
-import Layout from '@/layouts/Auth.vue';
-import { login, register } from '@/routes';
-import { Form, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
-import { Checkbox } from '@/components/ui/checkbox';
+import Layout from '@/layouts/Auth.vue'
+import { login, register } from '@/routes';
+
+import { Link, useForm } from '@inertiajs/vue3'
+
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase'
+import axios from 'axios'
+
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 
-import { store } from '@/routes/register';
+import { request } from '@/routes/password';
+
+const showPassword = ref(false);
+
+const form = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+})
+
+const submit = async () => {
+    if (form.processing) return
+
+    form.clearErrors()
+    form.processing = true
+
+    try {
+        const cred = await createUserWithEmailAndPassword(
+            auth,
+            form.email,
+            form.password
+        )
+
+        const token = await cred.user.getIdToken(true)
+
+        await axios.post(
+            '/auth/firebase',
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+
+        window.location.href = '/dashboard'
+    } catch (error: any) {
+        console.error(error)
+
+        // Mensagem genérica (não expor detalhes do Firebase)
+        form.setError('email', 'Credenciais inválidas')
+    } finally {
+        form.processing = false
+    }
+}
 </script>
 
 <template>
@@ -35,32 +86,27 @@ import { store } from '@/routes/register';
                         <div class="card card-md">
                             <div class="card-body">
                                 <h2 class="h2 text-center mb-4">Criar conta</h2>
-                                <Form v-bind="store.form()" :reset-on-success="['password', 'password_confirmation']"
-                                    v-slot="{ errors, processing }">
+                                <form @submit.prevent="submit">
                                     <div class="mb-3">
                                         <label class="form-label">Nome</label>
-                                        <Input
-                                            type="text"
-                                            name="name"
-                                            id="name"
-                                            class="form-control"
-                                            placeholder="Nome"
-                                            autocomplete="name"
-                                            required
-                                            autofocus
-                                            :tabindex="1"
-                                        />
+                                        <Input type="text" v-model="form.name" id="name" class="form-control"
+                                            placeholder="Nome" autocomplete="name" required autofocus :tabindex="1" />
 
-                                        <InputError :message="errors.email" />
+                                        <div v-if="form.errors.name" class="invalid-feedback d-block">
+                                            {{ form.errors.name }}
+                                        </div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <Input type="email" name="email" id="email" class="form-control"
-                                            placeholder="exemplo@email.com" autocomplete="email" required autofocus
-                                            :tabindex="1" />
+                                        <Input type="email" v-model="form.email" id="email" class="form-control"
+                                            placeholder="exemplo@email.com" autocomplete="email" required
+                                            :tabindex="2" />
 
-                                        <InputError :message="errors.email" />
+
+                                        <div v-if="form.errors.email" class="invalid-feedback d-block">
+                                            {{ form.errors.email }}
+                                        </div>
                                     </div>
 
                                     <div class="mb-2">
@@ -69,9 +115,9 @@ import { store } from '@/routes/register';
                                         </label>
 
                                         <div class="input-group input-group-flat">
-                                            <Input type="password" name="password" id="password" class="form-control"
-                                                placeholder="Sua senha" autocomplete="new-password" required
-                                                :tabindex="2" />
+                                            <Input type="password" v-model="form.password" id="password"
+                                                class="form-control" placeholder="Sua senha" autocomplete="new-password"
+                                                required :tabindex="3" />
 
                                             <span class="input-group-text">
                                                 <a href="#" class="link-secondary" title="Show password"
@@ -87,7 +133,10 @@ import { store } from '@/routes/register';
                                                 </a>
                                             </span>
 
-                                            <InputError :message="errors.password" />
+
+                                            <div v-if="form.errors.password" class="invalid-feedback d-block">
+                                                {{ form.errors.password }}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -97,9 +146,10 @@ import { store } from '@/routes/register';
                                         </label>
 
                                         <div class="input-group input-group-flat mt-3">
-                                            <Input type="password" name="password_confirmation" id="password_confirmation" class="form-control"
+                                            <Input type="password" v-model="form.password_confirmation"
+                                                id="password_confirmation" class="form-control"
                                                 placeholder="Confirme sua senha" autocomplete="new-password" required
-                                                :tabindex="3" />
+                                                :tabindex="4" />
 
                                             <span class="input-group-text">
                                                 <a href="#" class="link-secondary" title="Show password"
@@ -115,14 +165,18 @@ import { store } from '@/routes/register';
                                                 </a>
                                             </span>
 
-                                            <InputError :message="errors.password_confirmation" />
+
+                                            <div v-if="form.errors.password_confirmation"
+                                                class="invalid-feedback d-block">
+                                                {{ form.errors.password_confirmation }}
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-footer">
-                                        <Button type="submit" class="btn btn-primary w-100" :tabindex="4"
-                                            :disabled="processing" data-test="login-button">
-                                            <Spinner v-if="processing" />
+                                        <Button type="submit" class="btn btn-primary w-100" :tabindex="5"
+                                            :disabled="form.processing" data-test="login-button">
+                                            <Spinner v-if="form.processing" />
                                             Criar conta
                                         </Button>
                                     </div>
