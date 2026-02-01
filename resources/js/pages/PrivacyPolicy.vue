@@ -3,12 +3,12 @@ import Layout from '@/layouts/Auth.vue';
 </script>
 
 <template>
-	<Layout title="Termos e Condições">
+	<Layout title="Política de Privacidade">
 		<div class="container container-narrow py-4">
 			<div class="text-center mb-4">
-				<a href="." aria-label="Tabler"
-					class="navbar-brand navbar-brand-autodark"><svg xmlns="http://www.w3.org/2000/svg" width="110"
-						height="32" viewBox="0 0 232 68" class="navbar-brand-image">
+				<a href="." aria-label="Tabler" class="navbar-brand navbar-brand-autodark"><svg
+						xmlns="http://www.w3.org/2000/svg" width="110" height="32" viewBox="0 0 232 68"
+						class="navbar-brand-image">
 						<path
 							d="M64.6 16.2C63 9.9 58.1 5 51.8 3.4 40 1.5 28 1.5 16.2 3.4 9.9 5 5 9.9 3.4 16.2 1.5 28 1.5 40 3.4 51.8 5 58.1 9.9 63 16.2 64.6c11.8 1.9 23.8 1.9 35.6 0C58.1 63 63 58.1 64.6 51.8c1.9-11.8 1.9-23.8 0-35.6zM33.3 36.3c-2.8 4.4-6.6 8.2-11.1 11-1.5.9-3.3.9-4.8.1s-2.4-2.3-2.5-4c0-1.7.9-3.3 2.4-4.1 2.3-1.4 4.4-3.2 6.1-5.3-1.8-2.1-3.8-3.8-6.1-5.3-2.3-1.3-3-4.2-1.7-6.4s4.3-2.9 6.5-1.6c4.5 2.8 8.2 6.5 11.1 10.9 1 1.4 1 3.3.1 4.7zM49.2 46H37.8c-2.1 0-3.8-1-3.8-3s1.7-3 3.8-3h11.4c2.1 0 3.8 1 3.8 3s-1.7 3-3.8 3z"
 							fill="#066fd1" style="fill: var(--tblr-primary, #066fd1)" />
@@ -21,192 +21,88 @@ import Layout from '@/layouts/Auth.vue';
 
 			<div class="card card-md">
 				<div class="card-body">
-					<h3 class="card-title"></h3>
-					<div class="markdown">
+					<div class="d-flex align-items-center justify-content-between flex-wrap mb-5">
+						<h2>Política de Privacidade</h2>
 						<p>
-							We (the folks at Tabler) run a website hosting platform called <a
-								href="https://tabler.io">tabler.io</a> and would love for you to use it.
-							Tabler.io's basic service is free, and we offer paid upgrades for advanced features. Our
-							service is designed to give you as much control and
-							ownership over what goes on your website as possible. However, be responsible in what you
-							publish. In particular, make sure that none of the
-							prohibited items (like spam, viruses, or serious threats of violence) appear in your
-							content.
-						</p>
-						<hr />
-						<p>
-							The following terms and conditions govern all use of the tabler.io website and all content,
-							services, and products available at or through the
-							website. Our Services are offered subject to your acceptance without modification of all of
-							the terms and conditions contained herein and all
-							other operating rules, policies (including, without limitation, <a
-								href="https://tabler.io/privacy-policy.html">Tabler's Privacy Policy</a> and
-							procedures that may be published from time to time by Tabler (collectively, the
-							&quot;Agreement&quot;). You agree that we may automatically
-							upgrade our Services, and these terms will apply to any upgrades.
-						</p>
-						<p>
-							Please read this Agreement carefully before accessing or using our Services. By accessing or
-							using any part of our services, you agree to become
-							bound by the terms and conditions of this agreement. If you do not agree to all the terms
-							and conditions of this agreement, then you may not
-							access or use any of our services. If these terms and conditions are considered an offer by
-							Tabler, acceptance is expressly limited to these
-							terms.
-						</p>
-						<p>
-							Our Services are not directed to users younger than 16, and access and use of our Services
-							is only offered to users 16 years of age or older. If
-							you are under 16 years old, please do not register to use our Services. Any person who
-							registers as a user or provides their personal
-							information to our Services represents that they are 16 years of age or older. Use of our
-							Services requires a tabler.io account. You agree to
-							provide us with complete and accurate information when you register for an account. You will
-							be solely responsible and liable for any activity
-							that occurs under your username. You are responsible for keeping your password secure.
-						</p>
-						<h3>1. tabler.io.</h3>
-						<ul>
-							<li>
-								<p>
-									<strong>Responsibility of Contributors.</strong> If you post material to tabler.io,
-									post links on tabler.io, or otherwise make (or allow any
-									third party to make) material available (any such material, &quot;Content&quot;),
-									you are entirely responsible for the content of, and any
-									harm resulting from, that Content or your conduct. That is the case regardless of
-									what form the Content takes, which includes, but is not
-									limited to text, photo, video, audio, or code. By using tabler.io, you represent and
-									warrant that your Content and conduct do not violate
-									these terms. By submitting Content to Tabler for inclusion on your account, you
-									grant Tabler a world-wide, royalty-free, and non-exclusive
-									license to reproduce, modify, adapt and publish the Content solely for the purpose
-									of displaying, distributing, and promoting your
-									changelog. If you delete Content, Tabler will use reasonable efforts to remove it
-									from tabler.io, but you acknowledge that caching or
-									references to the Content may not be made immediately unavailable. Without limiting
-									any of those representations or warranties, Tabler has
-									the right (though not the obligation) to, in Tabler's sole discretion, (i) reclaim
-									your username or website's URL due to prolonged
-									inactivity, (ii) refuse or remove any content that, in Tabler's reasonable opinion,
-									violates any tabler policy or is in any way harmful or
-									objectionable, or (iii) terminate or deny access to and use of Tabler.io to any
-									individual or entity for any reason. Tabler will have no
-									obligation to provide a refund of any amounts previously paid.
-								</p>
-							</li>
-							<li>
-								<p><strong>HTTPS.</strong> We offer free HTTPS on all tabler.io accounts by default.</p>
-							</li>
-						</ul>
-						<h3>2. Responsibility of Visitors.</h3>
-						<p>
-							Tabler has not reviewed, and cannot review, all of the material, including computer
-							software, posted to our Services, and cannot therefore be
-							responsible for that material's content, use or effects. By operating our Services, Tabler
-							does not represent or imply that it endorses the
-							material there posted, or that it believes such material to be accurate, useful, or
-							non-harmful. You are responsible for taking precautions as
-							necessary to protect yourself and your computer systems from viruses, worms, Trojan horses,
-							and other harmful or destructive content. Our
-							Services may contain content that is offensive, indecent, or otherwise objectionable, as
-							well as content containing technical inaccuracies,
-							typographical mistakes, and other errors. Our Services may also contain material that
-							violates the privacy or publicity rights, or infringes the
-							intellectual property and other proprietary rights, of third parties, or the downloading,
-							copying or use of which is subject to additional terms
-							and conditions, stated or unstated. Tabler disclaims any responsibility for any harm
-							resulting from the use by visitors of our Services, or from
-							any downloading by those visitors of content there posted.
-						</p>
-						<h3>3. Content Posted on Other Websites.</h3>
-						<p>
-							We have not reviewed, and cannot review, all of the material, including computer software,
-							made available through the websites and webpages to
-							which Tabler links, and that link to Tabler. Tabler does not have any control over those
-							non-tabler websites, and is not responsible for their
-							contents or their use. By linking to a non-tabler website, Tabler does not represent or
-							imply that it endorses such website. You are responsible
-							for taking precautions as necessary to protect yourself and your computer systems from
-							viruses, worms, Trojan horses, and other harmful or
-							destructive content. Tabler disclaims any responsibility for any harm resulting from your
-							use of non-tabler websites and webpages.
-						</p>
-						<h3>5. Copyright Infringement and DMCA Policy.</h3>
-						<p>
-							As Tabler asks others to respect its intellectual property rights, it respects the
-							intellectual property rights of others. If you believe that
-							material located on or linked to by tabler.io violates your copyright, you are encouraged to
-							notify Tabler in accordance with Tabler's Digital
-							Millennium Copyright Act (&quot;DMCA&quot;) Policy. Tabler will respond to all such notices,
-							including as required or appropriate by removing
-							the infringing material or disabling all links to the infringing material. Tabler will
-							terminate a visitor's access to and use of the Website
-							if, under appropriate circumstances, the visitor is determined to be a repeat infringer of
-							the copyrights or other intellectual property rights
-							of Tabler or others. In the case of such termination, Tabler will have no obligation to
-							provide a refund of any amounts previously paid to
-							Tabler.
-						</p>
-						<h3>6. Intellectual Property.</h3>
-						<p>
-							This Agreement does not transfer from Tabler to you any Tabler or third party intellectual
-							property, and all right, title, and interest in and
-							to such property will remain (as between the parties) solely with Tabler. Tabler, tabler.io,
-							the tabler.io logo, and all other trademarks,
-							service marks, graphics and logos used in connection with tabler.io or our Services, are
-							trademarks or registered trademarks of Tabler or
-							Tabler's licensors. Other trademarks, service marks, graphics and logos used in connection
-							with our Services may be the trademarks of other
-							third parties. Your use of our Services grants you no right or license to reproduce or
-							otherwise use any Tabler or third-party trademarks.
-						</p>
-						<h3>7. Changes.</h3>
-						<p>
-							We are constantly updating our Services, and that means sometimes we have to change the
-							legal terms under which our Services are offered. If we
-							make changes that are material, we will let you know by posting on our changelog, or by
-							sending you an email or other communication before the
-							changes take effect. The notice will designate a reasonable period of time after which the
-							new terms will take effect.
-						</p>
-						<h3>8. Disclaimer of Warranties.</h3>
-						<p>
-							Our Services are provided &quot;as is.&quot; Tabler and its suppliers and licensors hereby
-							disclaim all warranties of any kind, express or
-							implied, including, without limitation, the warranties of merchantability, fitness for a
-							particular purpose and non-infringement. Neither Tabler
-							nor its suppliers and licensors, makes any warranty that our Services will be error free or
-							that access thereto will be continuous or
-							uninterrupted.
-						</p>
-						<h3>9. License.</h3>
-						<p>
-							By using Tabler, You are acknowledging that You have read and have agreed to <a
-								href="https://tabler.io/license.html">Tabler's License</a>, so
-							please read them carefully.
-						</p>
-						<h3>10. General Representation and Warranty.</h3>
-						<p>
-							You represent and warrant that (i) your use of our Services will be in strict accordance
-							with the Tabler Privacy Policy, with this Agreement,
-							and with all applicable laws and regulations (including without limitation any local laws or
-							regulations in your country, state, city, or other
-							governmental area, regarding online conduct and acceptable content, and including all
-							applicable laws regarding the transmission of technical
-							data exported from the United States or the country in which you reside) and (ii) your use
-							of our Services will not infringe or misappropriate
-							the intellectual property rights of any third party.
-						</p>
-						<h3>12. Refund Policy.</h3>
-						<p>Payments for Tabler are not refundable for any reason.</p>
-						<h3>13. Translation.</h3>
-						<p>
-							These Terms of Service were originally written in English (US). We may translate these terms
-							into other languages. In the event of a conflict
-							between a translated version of these Terms of Service and the English version, the English
-							version will control.
+							Última atualização: <strong>01 de Fevereiro de 2026</strong>
 						</p>
 					</div>
+
+					<p>
+						A presente Política de Privacidade descreve como recolhemos, utilizamos
+						e protegemos os dados pessoais dos utilizadores da plataforma
+						<strong>MoKumbu</strong>.
+					</p>
+
+					<h3>1. Dados que Recolhemos</h3>
+					<p>
+						Podemos recolher os seguintes dados:
+					</p>
+					<ul>
+						<li>Nome;</li>
+						<li>Endereço de e-mail;</li>
+						<li>Informações básicas fornecidas por provedores de login social.</li>
+					</ul>
+
+					<h3>2. Forma de Autenticação</h3>
+					<p>
+						A autenticação é realizada através do Firebase Authentication.
+						Não armazenamos palavras-passe nos nossos servidores.
+					</p>
+
+					<h3>3. Finalidade do Tratamento</h3>
+					<p>
+						Os dados recolhidos são utilizados para:
+					</p>
+					<ul>
+						<li>Permitir o acesso à Plataforma;</li>
+						<li>Gerir contas de utilizador;</li>
+						<li>Garantir segurança e prevenção de fraudes;</li>
+						<li>Melhorar a experiência do utilizador.</li>
+					</ul>
+
+					<h3>4. Partilha de Dados</h3>
+					<p>
+						Não vendemos nem partilhamos dados pessoais com terceiros,
+						exceto quando necessário para cumprimento legal
+						ou funcionamento dos serviços (ex.: Firebase).
+					</p>
+
+					<h3>5. Armazenamento e Segurança</h3>
+					<p>
+						Adotamos medidas técnicas e organizacionais adequadas
+						para proteger os dados pessoais contra acesso não autorizado,
+						perda ou divulgação indevida.
+					</p>
+
+					<h3>6. Direitos do Utilizador</h3>
+					<p>
+						O utilizador pode solicitar:
+					</p>
+					<ul>
+						<li>Acesso aos seus dados;</li>
+						<li>Correção de dados incorretos;</li>
+						<li>Eliminação da sua conta e dados associados.</li>
+					</ul>
+
+					<h3>7. Retenção de Dados</h3>
+					<p>
+						Os dados serão mantidos apenas pelo tempo necessário
+						para cumprir as finalidades descritas nesta Política.
+					</p>
+
+					<h3>8. Alterações a esta Política</h3>
+					<p>
+						Podemos atualizar esta Política periodicamente.
+						As alterações serão publicadas nesta página.
+					</p>
+
+					<h3>9. Contacto</h3>
+					<p>
+						Para questões relacionadas com privacidade, contacte:
+						<br>
+						<strong>dorivaldovalentim@gmail.com</strong>
+					</p>
 				</div>
 			</div>
 		</div>
