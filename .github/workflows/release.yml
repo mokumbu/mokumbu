@@ -1,0 +1,55 @@
+name: Build & Release Image
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  REGISTRY: ghcr.io
+  APP_NAME: mokumbu
+  IMAGE_NAME: ${{ github.repository }}  # owner/repo
+  ENVIRONMENT: prd
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_CI }}" > ~/.kube/config
+
+      - name: Extract version
+        id: vars
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io \
+            -u ${{ github.actor }} \
+            --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.version }} \
+            -t ghcr.io/${{ env.IMAGE_NAME }}:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.version }}
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy in Production
+        run: |
+          kubectl set image deployment/${{ env.APP_NAME }}-${{ env.ENVIRONMENT }} \
+            ${{ env.APP_NAME }}-${{ env.ENVIRONMENT }}=ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.version }} \
+            -n ${{ env.APP_NAME }}-${{ env.ENVIRONMENT }}

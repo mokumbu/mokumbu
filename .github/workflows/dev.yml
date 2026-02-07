@@ -1,0 +1,53 @@
+name: Build & Push Image
+
+on:
+  push:
+    branches:
+      - release/dev
+
+env:
+  REGISTRY: ghcr.io
+  APP_NAME: mokumbu
+  IMAGE_NAME: ${{ github.repository }}  # owner/repo
+  ENVIRONMENT: dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_CI }}" > ~/.kube/config
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io \
+            -u ${{ github.actor }} \
+            --password-stdin
+
+      - name: Set image tag
+        run: |
+          echo "IMAGE_TAG=dev-${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Build image
+        run: |
+          docker build \
+            -t ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            -t ghcr.io/${{ env.IMAGE_NAME }}:latest-dev \
+            .
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:latest-dev
+
+      - name: Deploy in Development
+        run: |
+          kubectl set image deployment/${{ env.APP_NAME }}-${{ env.ENVIRONMENT }} \
+            ${{ env.APP_NAME }}-${{ env.ENVIRONMENT }}=ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            -n ${{ env.APP_NAME }}-${{ env.ENVIRONMENT }}
