@@ -45,7 +45,8 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 	&& php artisan config:clear && php artisan storage:link
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /var/www/html/entrypoint.sh
 
 EXPOSE 80
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["apache2-foreground"]

@@ -8,5 +8,5 @@ for file in /var/www/html/public/build/assets/*.js; do
   mv "$file.tmp" "$file"
 done
 
-# Executa o comando padrão do Apache
-exec apache2-foreground
+echo "Starting Apache..."
+exec "$@"
