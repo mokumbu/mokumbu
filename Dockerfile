@@ -39,8 +39,12 @@ RUN npm install -g yarn
 RUN yarn
 RUN yarn build
 
-RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
-	&& chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+RUN mkdir -p storage/framework/{cache,sessions,views} \
+	&& chown -R www-data:www-data /storage /bootstrap/cache \
 	&& php artisan config:clear && php artisan storage:link
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 80
+ENTRYPOINT ["/entrypoint.sh"]
