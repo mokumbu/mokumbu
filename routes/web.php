@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\FirebaseAuthController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Fortify\Features;
 
-Route::redirect('/', '/dashboard')->name('home');
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canRegister' => Features::enabled(Features::registration()),
+    ]);
+})->name('home');
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::post('/auth/firebase', FirebaseAuthController::class)->name('auth.firebase');
-
-Route::inertia('/privacy-policy', 'PrivacyPolicy')->name('privacy-policy');
-Route::inertia('/terms-and-conditions', 'TermsAndConditions')->name('terms-and-conditions');
+require __DIR__.'/settings.php';
