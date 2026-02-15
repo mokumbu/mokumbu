@@ -54,7 +54,7 @@ const submit = async () => {
 
         window.location.href = '/dashboard';
     } catch (error) {
-        console.error(error)
+        console.error(error);
 
         // Mensagem genérica (não expor detalhes do Firebase)
         form.setError('email', 'Credenciais inválidas');
