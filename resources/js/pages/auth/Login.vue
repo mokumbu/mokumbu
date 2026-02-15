@@ -28,19 +28,19 @@ const form = useForm({
 })
 
 const submit = async () => {
-    if (form.processing) return
+    if (form.processing) return;
 
-    form.clearErrors()
-    form.processing = true
+    form.clearErrors();
+    form.processing = true;
 
     try {
         const cred = await signInWithEmailAndPassword(
             auth,
             form.email,
             form.password
-        )
+        );
 
-        const token = await cred.user.getIdToken(true)
+        const token = await cred.user.getIdToken(true);
 
         await axios.post(
             '/auth/firebase',
@@ -52,14 +52,14 @@ const submit = async () => {
             }
         )
 
-        window.location.href = '/dashboard'
+        window.location.href = '/dashboard';
     } catch (error: any) {
         console.error(error)
 
         // Mensagem genérica (não expor detalhes do Firebase)
-        form.setError('email', 'Credenciais inválidas')
+        form.setError('email', 'Credenciais inválidas');
     } finally {
-        form.processing = false
+        form.processing = false;
     }
 }
 </script>
