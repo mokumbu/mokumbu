@@ -41,7 +41,8 @@ jobs:
           docker build \
             -t ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.version }} \
             -t ghcr.io/${{ env.IMAGE_NAME }}:latest \
-            .
+            . \
+            --no-cache
 
       - name: Push Docker image
         run: |
