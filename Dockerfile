@@ -13,6 +13,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV NODE_VERSION=22.13.5
 
 WORKDIR /var/www/html
+COPY composer.json ./
+COPY composer.lock ./
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
