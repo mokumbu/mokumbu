@@ -10,7 +10,6 @@ RUN echo "php_value post_max_size 100M" >> /etc/apache2/apache2.conf
 
 # Set the COMPOSER_ALLOW_SUPERUSER environment variable
 ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV NODE_VERSION=22.13.5
 
 WORKDIR /var/www/html
 COPY composer.json ./
@@ -24,7 +23,7 @@ RUN apt-get update && apt-get install -y \
 	unzip \
 	vim \
 	gettext-base \
-	&& curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+	&& curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 	&& apt-get install -y --no-install-recommends nodejs \
 	&& rm -rf /var/lib/apt/lists/*
 
