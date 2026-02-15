@@ -13,7 +13,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV NODE_VERSION=22.13.5
 
 WORKDIR /var/www/html
-COPY . .
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
@@ -35,9 +34,10 @@ RUN composer install -q --no-ansi --no-interaction --no-scripts --no-progress --
 
 RUN a2enmod rewrite
 
-# Install npm
+COPY package*.json ./
 RUN npm ci
-RUN npm install
+
+COPY . .
 RUN npm run build
 
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
