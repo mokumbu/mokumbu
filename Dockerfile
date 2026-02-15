@@ -10,7 +10,7 @@ RUN echo "php_value post_max_size 100M" >> /etc/apache2/apache2.conf
 
 # Set the COMPOSER_ALLOW_SUPERUSER environment variable
 ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV NODE_VERSION=20.10.0
+ENV NODE_VERSION=22.13.5
 
 WORKDIR /var/www/html
 COPY . .
