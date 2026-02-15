@@ -39,8 +39,8 @@ jobs:
           docker build \
             -t ghcr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
             -t ghcr.io/${{ env.IMAGE_NAME }}:latest-dev \
-            . \
             -f ./mokumbu/Dockerfile \
+            . \
             --no-cache
 
       - name: Push image
