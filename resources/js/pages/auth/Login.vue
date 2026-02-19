@@ -25,7 +25,7 @@ const showPassword = ref(false);
 const form = useForm({
     email: '',
     password: '',
-})
+});
 
 const submit = async () => {
     if (form.processing) return
@@ -38,9 +38,9 @@ const submit = async () => {
             auth,
             form.email,
             form.password
-        )
+        );
 
-        const token = await cred.user.getIdToken(true)
+        const token = await cred.user.getIdToken(true);
 
         await axios.post(
             '/auth/firebase',
