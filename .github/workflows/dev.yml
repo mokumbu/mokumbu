@@ -3,7 +3,7 @@ name: Build & Push Image
 on:
   push:
     branches:
-      - feature/ci.cd.tests
+      - release/dev
 
 env:
   REGISTRY: ghcr.io
