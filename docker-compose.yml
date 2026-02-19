@@ -4,6 +4,8 @@ services:
   website:
     build: .
     container_name: mokumbu
+    ports:
+      - ${APP_PORT}:80
     environment:
       - APP_NAME=${APP_NAME}
       - APP_ENV=${APP_ENV}
