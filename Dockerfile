@@ -1,54 +1,57 @@
-FROM php:8.2.9-apache
+FROM php:8.2-fpm
 
-# Enable Apache modules
-RUN a2enmod rewrite
-
-# Set PHP upload limits
-RUN echo "upload_max_filesize=10M\npost_max_size=10M" > /usr/local/etc/php/conf.d/uploads.ini
-RUN echo "php_value upload_max_filesize 100M" >> /etc/apache2/apache2.conf
-RUN echo "php_value post_max_size 100M" >> /etc/apache2/apache2.conf
-
-# Set the COMPOSER_ALLOW_SUPERUSER environment variable
-ENV COMPOSER_ALLOW_SUPERUSER=1
-
+# Set working directory
 WORKDIR /var/www/html
-COPY composer.json ./
-COPY composer.lock ./
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-
-# Install required packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
 	git \
 	unzip \
 	vim \
+	curl \
 	gettext-base \
-	&& curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
-	&& apt-get install -y --no-install-recommends nodejs \
+	nginx \
+	supervisor \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Install PHP extensions
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# Install Node.js 20 (estável para Vite)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+	&& apt-get install -y nodejs
+
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install dependencies with Composer
-RUN composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
+# Copy composer files first (better caching)
+COPY composer.json composer.lock ./
 
-RUN a2enmod rewrite
+# Copy application files
+COPY . .
 
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+# Copy package files first (better caching)
 COPY package*.json ./
 RUN npm ci
 
-COPY . .
+# Build frontend
 RUN npm run build
 
+# Laravel permissions
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
-	&& chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-	&& php artisan config:clear && php artisan storage:link
+	&& chown -R www-data:www-data storage bootstrap/cache
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Clear config cache
+RUN php artisan config:clear && php artisan storage:link
+
+# Copy Nginx config
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# Copy Supervisor config
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["/usr/bin/supervisord"]
