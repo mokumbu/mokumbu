@@ -121,6 +121,9 @@
         "resources/js/**/*.ts",
         "resources/js/**/*.d.ts",
         "resources/js/**/*.tsx", 
-        "resources/js/**/*.vue"
-, "resources/js/ssr.js", "resources/js/firebase.js", "resources/js/app.js"    ]
+        "resources/js/**/*.vue",
+        "resources/js/ssr.ts",
+        "resources/js/firebase.ts",
+        "resources/js/app.ts"
+    ]
 }

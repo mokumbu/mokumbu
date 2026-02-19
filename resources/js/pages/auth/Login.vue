@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 import Layout from '@/layouts/Auth.vue'
@@ -53,7 +53,7 @@ const submit = async () => {
         )
 
         window.location.href = '/dashboard';
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
 
         // Mensagem genérica (não expor detalhes do Firebase)
