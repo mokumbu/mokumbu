@@ -1,16 +1,24 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\FirebaseAuthController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::redirect('/', '/dashboard')->name('home');
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::post('/auth/firebase', FirebaseAuthController::class)->name('auth.firebase');
-
-Route::inertia('/privacy-policy', 'PrivacyPolicy')->name('privacy-policy');
-Route::inertia('/terms-and-conditions', 'TermsAndConditions')->name('terms-and-conditions');
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+});

@@ -1,46 +1,57 @@
-FROM php:8.2.9-apache
+FROM php:8.2-fpm
 
-# Enable Apache modules
-RUN a2enmod rewrite
-
-# Set PHP upload limits
-RUN echo "upload_max_filesize=10M\npost_max_size=10M" > /usr/local/etc/php/conf.d/uploads.ini
-RUN echo "php_value upload_max_filesize 100M" >> /etc/apache2/apache2.conf
-RUN echo "php_value post_max_size 100M" >> /etc/apache2/apache2.conf
-
-# Set the COMPOSER_ALLOW_SUPERUSER environment variable
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV NODE_VERSION=20.10.0
-
+# Set working directory
 WORKDIR /var/www/html
-COPY . .
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-
-# Install required packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
 	git \
 	unzip \
 	vim \
-	&& curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-	&& apt-get install -y --no-install-recommends nodejs \
+	curl \
+	gettext-base \
+	nginx \
+	supervisor \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Install PHP extensions
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# Install Node.js 20 (estável para Vite)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+	&& apt-get install -y nodejs
+
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install dependencies with Composer
-RUN composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
+# Copy composer files first (better caching)
+COPY composer.json composer.lock ./
 
-RUN a2enmod rewrite
+# Copy application files
+COPY . .
 
-# Install npm
-RUN npm install -g yarn
-RUN yarn
-RUN yarn build
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
+# Copy package files first (better caching)
+COPY package*.json ./
+RUN npm ci
+
+# Build frontend
+RUN npm run build
+
+# Laravel permissions
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
-	&& chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-	&& php artisan config:clear && php artisan storage:link
+	&& chown -R www-data:www-data storage bootstrap/cache
+
+# Clear config cache
+RUN php artisan config:clear && php artisan storage:link
+
+# Copy Nginx config
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# Copy Supervisor config
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
+
+CMD ["/usr/bin/supervisord"]
