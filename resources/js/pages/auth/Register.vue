@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 import Layout from '@/layouts/Auth.vue'
-import { login, register } from '@/routes';
+import { login, register, termsAndConditions } from '@/routes';
 
 import { Link, useForm } from '@inertiajs/vue3'
 
@@ -14,22 +14,28 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 
-import { request } from '@/routes/password';
 import GoogleProvider from '@/components/Login/GoogleProvider.vue';
 import FacebookProvider from '@/components/Login/FacebookProvider.vue';
 import AppleProvider from '@/components/Login/AppleProvider.vue';
 
 const showPassword = ref(false);
+const didAcceptTerms = ref(false);
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
+    terms: false
 })
 
 const submit = async () => {
     if (form.processing) return
+
+    if (!didAcceptTerms.value) {
+        form.setError('terms', 'Você precisa aceitar os termos e condições')
+        return
+    }
 
     form.clearErrors()
     form.processing = true
@@ -174,6 +180,20 @@ const submit = async () => {
                                                 {{ form.errors.password_confirmation }}
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-check">
+                                            <input v-model="didAcceptTerms" type="checkbox" class="form-check-input">
+                                            <span class="form-check-label">
+                                                Ao criar uma conta, concorda com os nossos
+                                                <a :href="termsAndConditions().url" tabindex="-1" target="_blank">termos e condições</a>
+                                            .</span>
+
+                                            <div v-if="form.errors.terms" class="invalid-feedback d-block">
+                                                {{ form.errors.terms }}
+                                            </div>
+                                        </label>
                                     </div>
 
                                     <div class="form-footer">
