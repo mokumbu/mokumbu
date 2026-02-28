@@ -16,7 +16,6 @@ import {
 import { auth } from '@/firebase'
 import axios from 'axios'
 
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
