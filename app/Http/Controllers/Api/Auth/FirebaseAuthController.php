@@ -41,7 +41,8 @@ class FirebaseAuthController extends Controller
 
         // 🔐 Login WEB (session)
         if (! $request->has('api/*')) {
-            Auth::login($user);
+            $remember = $request->boolean('remember');
+            Auth::login($user, $remember);
             return true;
         }
 

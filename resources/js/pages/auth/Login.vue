@@ -6,7 +6,13 @@ import { login, register } from '@/routes';
 
 import { Link, useForm } from '@inertiajs/vue3'
 
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import {
+    browserLocalPersistence,
+    browserSessionPersistence,
+    setPersistence,
+    signInWithEmailAndPassword
+} from 'firebase/auth'
+
 import { auth } from '@/firebase'
 import axios from 'axios'
 
@@ -25,6 +31,7 @@ const showPassword = ref(false);
 const form = useForm({
     email: '',
     password: '',
+    remember: false
 });
 
 const submit = async () => {
@@ -34,6 +41,14 @@ const submit = async () => {
     form.processing = true
 
     try {
+        // 👇 Define persistência baseado no checkbox
+        await setPersistence(
+            auth,
+            form.remember
+                ? browserLocalPersistence
+                : browserSessionPersistence
+        );
+
         const cred = await signInWithEmailAndPassword(
             auth,
             form.email,
@@ -44,7 +59,7 @@ const submit = async () => {
 
         await axios.post(
             '/auth/firebase',
-            {},
+            { remember: form.remember },
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -132,7 +147,7 @@ const submit = async () => {
 
                                     <div class="mt-3 mb-3">
                                         <Label for="remember" class="form-check">
-                                            <Checkbox id="remember" name="remember" class="form-check-input p-0"
+                                            <input v-model="form.remember" type="checkbox" id="remember" class="form-check-input p-0"
                                                 :tabindex="3" />
                                             <span class="form-check-label">Lembrar-me neste dispositivo</span>
                                         </Label>
