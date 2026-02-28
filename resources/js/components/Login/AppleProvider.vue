@@ -1,21 +1,27 @@
-<script setup>
-import { getAuth, signInWithPopup, OAuthProvider } from "firebase/auth";
+<script setup lang="ts">
+import { getAuth, signInWithPopup, OAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
 import axios from "axios";
 import { auth } from "@/firebase";
 
 const loginWithApple = async () => {
 	try {
+		await setPersistence(auth, browserLocalPersistence);
+
 		const provider = new OAuthProvider("apple.com");
 		const result = await signInWithPopup(auth, provider);
 
 		const token = await result.user.getIdToken();
 
-		await axios.post("/auth/firebase", {}, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: "application/json"
+		await axios.post(
+			"/auth/firebase",
+			{ remember: true },
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+					Accept: "application/json"
+				}
 			}
-		});
+		);
 
 		window.location.href = "/dashboard";
 	} catch (e) {
