@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        <!-- Start cookieyes banner -->
+        <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8d2c3099b065c4b1f020732641d233c0/script.js"></script>
+        <!-- End cookieyes banner -->
+        
+        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
