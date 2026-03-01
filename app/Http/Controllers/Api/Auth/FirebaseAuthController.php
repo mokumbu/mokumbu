@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserSocialAccount;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 use Illuminate\Support\Facades\Auth;
@@ -29,12 +30,12 @@ class FirebaseAuthController extends Controller
 
         $uid        = $claims->get('sub');
         $email      = $claims->get('email');
-        $name       = $claims->get('name');
+        $name       = $claims->get('name') ?? Str::before($email, '@');
         $picture    = $claims->get('picture');
         $provider   = $claims->get('firebase')['sign_in_provider'];
 
         // 1️⃣ Verifica se social account já existe
-        $socialAccount = \App\Models\UserSocialAccount::where([
+        $socialAccount = UserSocialAccount::where([
             'provider' => $provider,
             'provider_uid' => $uid,
         ])->first();
@@ -42,7 +43,6 @@ class FirebaseAuthController extends Controller
         if ($socialAccount) {
             $user = $socialAccount->user;
         } else {
-
             // 2️⃣ Verifica se já existe usuário com mesmo email
             $user = User::where('email', $email)->first();
 
@@ -55,7 +55,6 @@ class FirebaseAuthController extends Controller
                 ]);
 
                 $user->profile()->create([
-                    'id' => Str::uuid(),
                     'profile_picture' => $picture,
                 ]);
             }
@@ -69,7 +68,7 @@ class FirebaseAuthController extends Controller
         }
 
         // 🔐 Login WEB (session)
-        if (! $request->has('api/*')) {
+        if (! $request->is('api/*')) {
             $remember = $request->boolean('remember');
             Auth::login($user, $remember);
             return true;
@@ -83,11 +82,7 @@ class FirebaseAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-            ],
+            'user' => $user?->load('profile', 'socialAccounts')
         ]);
     }
 
