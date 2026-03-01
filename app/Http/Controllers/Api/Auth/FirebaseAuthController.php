@@ -29,7 +29,7 @@ class FirebaseAuthController extends Controller
 
         $uid        = $claims->get('sub');
         $email      = $claims->get('email');
-        $name       = $claims->get('name');
+        $name       = $claims->get('name') ?? Str::before($email, '@');
         $picture    = $claims->get('picture');
         $provider   = $claims->get('firebase')['sign_in_provider'];
 
