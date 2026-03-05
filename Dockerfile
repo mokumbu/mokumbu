@@ -45,6 +45,7 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 
 # Clear config cache
 RUN php artisan config:clear && php artisan storage:link
+RUN php artisan sitemap:generate
 
 # Copy Nginx config
 COPY docker/nginx.conf /etc/nginx/nginx.conf
