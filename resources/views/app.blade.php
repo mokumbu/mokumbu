@@ -8,6 +8,10 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <meta charset="utf-8">
+
+		<meta name="author" content="Dorivaldo Valentim" />
+		<meta name="keywords" content="MoKumbu, finanças" />
+		<meta name="description" content="MoKumbu é uma app criada com o objectivo de ajudar as pessoas com a gestão das suas finanças." />
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" href="/favicon.ico" sizes="any">
