@@ -6,7 +6,7 @@ import { login, termsAndConditions } from '@/routes';
 
 import { Link, useForm } from '@inertiajs/vue3'
 
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { auth } from '@/firebase'
 import axios from 'axios'
 
@@ -45,7 +45,12 @@ const submit = async () => {
             auth,
             form.email,
             form.password
-        )
+        );
+
+        // 👇 Update Firebase user profile
+        await updateProfile(cred.user, {
+            displayName: form.name
+        })
 
         const token = await cred.user.getIdToken(true)
 
