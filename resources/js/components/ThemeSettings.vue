@@ -2,63 +2,60 @@
 import { onMounted } from 'vue';
 
 onMounted(() => {
-	document.addEventListener("DOMContentLoaded", function () {
-		var themeConfig = {
-			theme: "light",
-			"theme-base": "gray",
-			"theme-font": "sans-serif",
-			"theme-primary": "blue",
-			"theme-radius": "1",
-		};
-		var url = new URL(window.location);
-		var form = document.getElementById("offcanvas-settings");
-		var resetButton = document.getElementById("reset-changes");
-		var checkItems = function () {
-			for (var key in themeConfig) {
-				var value = window.localStorage["tabler-" + key] || themeConfig[key];
-				if (!!value) {
-					var radios = form.querySelectorAll(`[name="${key}"]`);
-					if (!!radios) {
-						radios.forEach((radio) => {
-							radio.checked = radio.value === value;
-						});
-					}
+	var themeConfig = {
+		theme: "light",
+		"theme-base": "gray",
+		"theme-font": "sans-serif",
+		"theme-primary": "blue",
+		"theme-radius": "1",
+	};
+	var url = new URL(window.location);
+	var form = document.getElementById("offcanvas-settings");
+	var resetButton = document.getElementById("reset-changes");
+	var checkItems = function () {
+		for (var key in themeConfig) {
+			var value = window.localStorage["tabler-" + key] || themeConfig[key];
+			if (!!value) {
+				var radios = form.querySelectorAll(`[name="${key}"]`);
+				if (!!radios) {
+					radios.forEach((radio) => {
+						radio.checked = radio.value === value;
+					});
 				}
 			}
-		};
-		form.addEventListener("change", function (event) {
-			var target = event.target,
-				name = target.name,
-				value = target.value;
-			for (var key in themeConfig) {
-				if (name === key) {
-					document.documentElement.setAttribute("data-bs-" + key, value);
-					window.localStorage.setItem("tabler-" + key, value);
-					url.searchParams.set(key, value);
-				}
+		}
+	};
+	form.addEventListener("change", function (event) {
+		var target = event.target,
+			name = target.name,
+			value = target.value;
+		for (var key in themeConfig) {
+			if (name === key) {
+				document.documentElement.setAttribute("data-bs-" + key, value);
+				window.localStorage.setItem("tabler-" + key, value);
+				url.searchParams.set(key, value);
 			}
-			window.history.pushState({}, "", url);
-		});
-		resetButton.addEventListener("click", function () {
-			for (var key in themeConfig) {
-				var value = themeConfig[key];
-				document.documentElement.removeAttribute("data-bs-" + key);
-				window.localStorage.removeItem("tabler-" + key);
-				url.searchParams.delete(key);
-			}
-			checkItems();
-			window.history.pushState({}, "", url);
-		});
-		checkItems();
+		}
+		window.history.pushState({}, "", url);
 	});
+	resetButton.addEventListener("click", function () {
+		for (var key in themeConfig) {
+			var value = themeConfig[key];
+			document.documentElement.removeAttribute("data-bs-" + key);
+			window.localStorage.removeItem("tabler-" + key);
+			url.searchParams.delete(key);
+		}
+		checkItems();
+		window.history.pushState({}, "", url);
+	});
+	checkItems();
 });
 </script>
 
 <template>
 	<div class="settings">
 		<a href="#" class="btn btn-floating btn-icon btn-primary" data-bs-toggle="offcanvas"
-			data-bs-target="#offcanvas-settings" aria-controls="offcanvas-settings" aria-label="Theme Settings">
-			<!-- Download SVG icon from http://tabler.io/icons/icon/brush -->
+			data-bs-target="#offcanvas-settings" aria-controls="offcanvas-settings" aria-label="Configurações do Tema">
 			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
 				stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
 				focusable="false" class="icon icon-1">
@@ -68,34 +65,44 @@ onMounted(() => {
 				<path d="M10.6 9a9 9 0 0 1 4.4 4.4" />
 			</svg>
 		</a>
+
 		<form class="offcanvas offcanvas-start offcanvas-narrow" tabindex="-1" id="offcanvas-settings" role="dialog"
 			aria-modal="true" aria-labelledby="offcanvas-settings-title">
+
 			<div class="offcanvas-header">
-				<h2 class="offcanvas-title" id="offcanvas-settings-title">Theme Settings</h2>
-				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+				<h2 class="offcanvas-title" id="offcanvas-settings-title">Configurações do Tema</h2>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
 			</div>
+
 			<div class="offcanvas-body d-flex flex-column">
 				<div>
+
 					<div class="mb-4">
-						<label class="form-label">Color mode</label>
-						<p class="form-hint">Choose the color mode for your app.</p>
+						<label class="form-label">Modo de cor</label>
+						<p class="form-hint">Escolha o modo de cor para a sua aplicação.</p>
+
 						<label class="form-check">
 							<div class="form-selectgroup-item">
 								<input type="radio" name="theme" value="light" class="form-check-input" checked />
-								<div class="form-check-label">Light</div>
+								<div class="form-check-label">Claro</div>
 							</div>
 						</label>
+
 						<label class="form-check">
 							<div class="form-selectgroup-item">
 								<input type="radio" name="theme" value="dark" class="form-check-input" />
-								<div class="form-check-label">Dark</div>
+								<div class="form-check-label">Escuro</div>
 							</div>
 						</label>
 					</div>
+
+
 					<div class="mb-4">
-						<label class="form-label">Color scheme</label>
-						<p class="form-hint">The perfect color mode for your app.</p>
+						<label class="form-label">Esquema de cores</label>
+						<p class="form-hint">Escolha a cor principal da sua aplicação.</p>
+
 						<div class="row g-2">
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="blue"
@@ -103,6 +110,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-blue"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="azure"
@@ -110,6 +118,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-azure"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="indigo"
@@ -117,6 +126,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-indigo"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="purple"
@@ -124,6 +134,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-purple"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="pink"
@@ -131,6 +142,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-pink"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="red"
@@ -138,6 +150,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-red"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="orange"
@@ -145,6 +158,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-orange"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="yellow"
@@ -152,6 +166,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-yellow"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="lime"
@@ -159,6 +174,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-lime"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="green"
@@ -166,6 +182,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-green"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="teal"
@@ -173,6 +190,7 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-teal"></span>
 								</label>
 							</div>
+
 							<div class="col-auto">
 								<label class="form-colorinput">
 									<input name="theme-primary" type="radio" value="cyan"
@@ -180,12 +198,17 @@ onMounted(() => {
 									<span class="form-colorinput-color bg-cyan"></span>
 								</label>
 							</div>
+
 						</div>
 					</div>
+
+
 					<div class="mb-4">
-						<label class="form-label">Font family</label>
-						<p class="form-hint">Choose the font family that fits your app.</p>
+						<label class="form-label">Família da fonte</label>
+						<p class="form-hint">Escolha a família de fonte que melhor se adapta à sua aplicação.</p>
+
 						<div>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-font" value="sans-serif" class="form-check-input"
@@ -193,79 +216,98 @@ onMounted(() => {
 									<div class="form-check-label">Sans-serif</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-font" value="serif" class="form-check-input" />
 									<div class="form-check-label">Serif</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-font" value="monospace" class="form-check-input" />
 									<div class="form-check-label">Monospace</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-font" value="comic" class="form-check-input" />
 									<div class="form-check-label">Comic</div>
 								</div>
 							</label>
+
 						</div>
 					</div>
+
+
 					<div class="mb-4">
-						<label class="form-label">Theme base</label>
-						<p class="form-hint">Choose the gray shade for your app.</p>
+						<label class="form-label">Base do tema</label>
+						<p class="form-hint">Escolha o tom de cinza para a sua aplicação.</p>
+
 						<div>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-base" value="slate" class="form-check-input" />
-									<div class="form-check-label">Slate</div>
+									<div class="form-check-label">Ardósia</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-base" value="gray" class="form-check-input"
 										checked />
-									<div class="form-check-label">Gray</div>
+									<div class="form-check-label">Cinza</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-base" value="zinc" class="form-check-input" />
-									<div class="form-check-label">Zinc</div>
+									<div class="form-check-label">Zinco</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-base" value="neutral" class="form-check-input" />
-									<div class="form-check-label">Neutral</div>
+									<div class="form-check-label">Neutro</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-base" value="stone" class="form-check-input" />
-									<div class="form-check-label">Stone</div>
+									<div class="form-check-label">Pedra</div>
 								</div>
 							</label>
+
 						</div>
 					</div>
+
+
 					<div class="mb-4">
-						<label class="form-label">Corner Radius</label>
-						<p class="form-hint">Choose the border radius factor for your app.</p>
+						<label class="form-label">Arredondamento dos cantos</label>
+						<p class="form-hint">Escolha o nível de arredondamento das bordas para a sua aplicação.</p>
+
 						<div>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-radius" value="0" class="form-check-input" />
 									<div class="form-check-label">0</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-radius" value="0.5" class="form-check-input" />
 									<div class="form-check-label">0.5</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-radius" value="1" class="form-check-input"
@@ -273,33 +315,44 @@ onMounted(() => {
 									<div class="form-check-label">1</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-radius" value="1.5" class="form-check-input" />
 									<div class="form-check-label">1.5</div>
 								</div>
 							</label>
+
 							<label class="form-check">
 								<div class="form-selectgroup-item">
 									<input type="radio" name="theme-radius" value="2" class="form-check-input" />
 									<div class="form-check-label">2</div>
 								</div>
 							</label>
+
 						</div>
 					</div>
+
 				</div>
+
 				<div class="mt-auto space-y">
+
 					<button type="button" class="btn w-100" id="reset-changes">
-						<!-- Download SVG icon from http://tabler.io/icons/icon/rotate -->
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
 							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
 							aria-hidden="true" focusable="false" class="icon icon-1">
 							<path d="M19.95 11a8 8 0 1 0 -.5 4m.5 5v-5h-5" />
 						</svg>
-						Reset changes
+
+						Repor alterações
 					</button>
-					<a href="#" class="btn btn-primary w-100" data-bs-dismiss="offcanvas"> Save </a>
+
+					<a href="#" class="btn btn-primary w-100" data-bs-dismiss="offcanvas">
+						Guardar
+					</a>
+
 				</div>
+
 			</div>
 		</form>
 	</div>
