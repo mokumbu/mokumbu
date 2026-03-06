@@ -1,21 +1,27 @@
-<script setup>
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+<script setup lang="ts">
+import { browserLocalPersistence, GoogleAuthProvider, setPersistence, signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import { auth } from "@/firebase";
 
 const loginWithGoogle = async () => {
 	try {
+		await setPersistence(auth, browserLocalPersistence);
+
 		const provider = new GoogleAuthProvider();
 		const result = await signInWithPopup(auth, provider);
 
 		const token = await result.user.getIdToken();
 
-		await axios.post("/auth/firebase", {}, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: "application/json"
+		await axios.post(
+			"/auth/firebase",
+			{ remember: true },
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+					Accept: "application/json"
+				}
 			}
-		});
+		);
 
 		window.location.href = "/dashboard";
 	} catch (e) {

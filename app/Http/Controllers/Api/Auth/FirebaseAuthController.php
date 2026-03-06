@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserSocialAccount;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 use Illuminate\Support\Facades\Auth;
@@ -27,21 +28,49 @@ class FirebaseAuthController extends Controller
 
         $claims = $verifiedToken->claims();
 
-        $uid   = $claims->get('sub');
-        $email = $claims->get('email');
-        $name  = $claims->get('name') ?? Str::before($email, '@');
+        $uid        = $claims->get('sub');
+        $email      = $claims->get('email');
+        $name       = $claims->get('name') ?? Str::before($email, '@');
+        $picture    = $claims->get('picture');
+        $provider   = $claims->get('firebase')['sign_in_provider'];
 
-        $user = User::updateOrCreate(
-            ['firebase_uid' => $uid],
-            [
-                'email' => $email,
-                'name'  => $name,
-            ]
-        );
+        // 1️⃣ Verifica se social account já existe
+        $socialAccount = UserSocialAccount::where([
+            'provider' => $provider,
+            'provider_uid' => $uid,
+        ])->first();
+
+        if ($socialAccount) {
+            $user = $socialAccount->user;
+        } else {
+            // 2️⃣ Verifica se já existe usuário com mesmo email
+            $user = User::where('email', $email)->first();
+
+            if (! $user) {
+                $user = User::create([
+                    'name'     => $name,
+                    'email'    => $email,
+                    'username' => $this->generateUniqueUsername($name),
+                    'email_verified_at' => now(),
+                ]);
+
+                $user->profile()->create([
+                    'profile_picture' => $picture,
+                ]);
+            }
+
+            // 3️⃣ Cria vínculo social
+            $user->socialAccounts()->create([
+                'provider' => $provider,
+                'provider_uid' => $uid,
+                'provider_email' => $email,
+            ]);
+        }
 
         // 🔐 Login WEB (session)
-        if (! $request->has('api/*')) {
-            Auth::login($user);
+        if (! $request->is('api/*')) {
+            $remember = $request->boolean('remember');
+            Auth::login($user, $remember);
             return true;
         }
 
@@ -53,11 +82,21 @@ class FirebaseAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-            ],
+            'user' => $user?->load('profile', 'socialAccounts')
         ]);
+    }
+
+    private function generateUniqueUsername(string $name): string
+    {
+        $base = Str::slug($name, '');
+        $username = $base;
+        $counter = 1;
+
+        while (User::where('username', $username)->exists()) {
+            $username = $base . $counter;
+            $counter++;
+        }
+
+        return $username;
     }
 }
