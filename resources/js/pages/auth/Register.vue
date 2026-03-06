@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 import Layout from '@/layouts/Auth.vue'
-import { login, register, termsAndConditions } from '@/routes';
+import { login, termsAndConditions } from '@/routes';
 
 import { Link, useForm } from '@inertiajs/vue3'
 
@@ -79,7 +79,7 @@ const submit = async () => {
                     <div class="container-tight">
                         <div class="text-center mb-4">
                             <!-- BEGIN NAVBAR LOGO -->
-                            <Link :href="register()" aria-label="Tabler" class="navbar-brand navbar-brand-autodark">
+                            <Link :href="login()" aria-label="Tabler" class="navbar-brand navbar-brand-autodark">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="110" height="32" viewBox="0 0 232 68"
                                     class="navbar-brand-image">
                                     <path

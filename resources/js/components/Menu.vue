@@ -70,7 +70,22 @@ const auth = computed(() => page.props.auth);
 				<div class="nav-item dropdown">
 					<a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown"
 						aria-label="Open user menu">
-						<span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"> </span>
+						<span
+							v-if="auth.user.profile?.profile_picture"
+							class="avatar avatar-sm"
+							:style="{ backgroundImage: `url(${auth.user.profile.profile_picture})` }"
+						></span>
+
+						<span v-else class="avatar avatar-0">
+							<!-- Download SVG icon from http://tabler.io/icons/icon/user -->
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+								stroke-linejoin="round" class="icon avatar-icon icon-2">
+								<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+								<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+							</svg>
+						</span>
+
 						<div class="d-none d-xl-block ps-2">
 							<div>{{ auth.user.name }}</div>
 							<div class="mt-1 small text-secondary">{{ auth.user.email }}</div>
