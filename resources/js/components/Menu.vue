@@ -2,6 +2,7 @@
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { dashboard, logout } from '@/routes'
 import { computed } from 'vue';
+import { profile } from '@/routes/dashboard';
 
 const handleLogout = () => {
 	router.flushAll();
@@ -93,8 +94,7 @@ const auth = computed(() => page.props.auth);
 					</a>
 
 					<div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-						<a class="dropdown-item"
-							href="./profile.html"><!-- Download SVG icon from http://tabler.io/icons/icon/user -->
+						<Link :href="profile()" class="dropdown-item"><!-- Download SVG icon from http://tabler.io/icons/icon/user -->
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
 								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
 								stroke-linejoin="round" aria-hidden="true" focusable="false"
@@ -103,7 +103,7 @@ const auth = computed(() => page.props.auth);
 								<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
 							</svg>
 							Perfil
-						</a>
+						</Link>
 
 						<div class="dropdown-divider"></div>
 
